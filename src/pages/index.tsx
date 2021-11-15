@@ -1,10 +1,11 @@
-import Img, { GetStaticProps } from 'next';
+import { GetStaticProps } from 'next';
 import Link from 'next/link';
 
 import { FiCalendar, FiUser } from 'react-icons/fi';
 import Prismic from '@prismicio/client';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
+import { useEffect, useState } from 'react';
 import Header from '../components/Header';
 
 import { getPrismicClient } from '../services/prismic';
@@ -32,11 +33,25 @@ interface HomeProps {
 }
 
 export default function Home({ response }: PostPagination) {
-  const posts = response.results;
+  const [postPagination, setPostPagination] = useState<Post[]>(
+    response.results
+  );
 
-  const nextPage = response.next_page;
+  const [nextPage, setNextPage] = useState<string>(response.next_page);
 
-  console.log(nextPage);
+  async function loadMorePosts() {
+    const finalData: PostPagination = await fetch(nextPage)
+      .then(result => result.json())
+      .then(data => {
+        return data;
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+    finalData.results.map(post => setPostPagination([...postPagination, post]));
+    setNextPage(finalData.next_page);
+  }
 
   return (
     <>
@@ -46,8 +61,8 @@ export default function Home({ response }: PostPagination) {
       <body>
         <Header />
         <main className={styles.contentContainer}>
-          {posts.map(post => (
-            <div className={styles.postContainer}>
+          {postPagination.map(post => (
+            <div key={post.uid} className={styles.postContainer}>
               <Link href="/">
                 <a>
                   <strong>{post.data.title}</strong>
@@ -68,7 +83,15 @@ export default function Home({ response }: PostPagination) {
               </Link>
             </div>
           ))}
-          {nextPage && <p className={styles.loadMore}>Carregar mais posts</p>}
+          {nextPage && (
+            <button
+              type="button"
+              onClick={loadMorePosts}
+              className={styles.loadMore}
+            >
+              Carregar mais posts
+            </button>
+          )}
         </main>
       </body>
     </>
@@ -87,7 +110,7 @@ export const getStaticProps: GetStaticProps = async () => {
         'posts.content',
         'posts.first_publication_date',
       ],
-      pageSize: 2,
+      pageSize: 1,
     }
   );
 

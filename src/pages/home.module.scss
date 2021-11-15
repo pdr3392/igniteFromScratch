@@ -10,8 +10,9 @@
 
 .postContainer {
   max-width: 720px;
-  margin: 3rem auto;
   font-family: 'Inter', sans-serif;
+  margin: 3rem auto;
+
   a {
     strong {
       font-size: 1.75rem;
@@ -46,6 +47,10 @@
   }
 }
 
+.postContainer:last-of-type {
+  margin: 0 !important;
+}
+
 .icons {
   margin-right: 0.5rem;
 }
@@ -53,7 +58,13 @@
 .loadMore {
   font-family: 'Inter', sans-serif;
   font-weight: 600;
-  margin: 4rem auto 5rem auto;
+  font-size: 1.125rem;
+  margin: 2.3rem auto 2.875rem auto;
   color: var(--pink-500);
   cursor: pointer;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  overflow: hidden;
+  outline: none;
 }
