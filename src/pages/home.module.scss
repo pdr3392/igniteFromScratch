@@ -1,1 +1,59 @@
-// TODO
+.contentContainer {
+  max-width: 720px;
+
+  margin: 0 auto;
+  padding: 0 2rem;
+
+  align-items: center;
+  justify-content: space-between;
+}
+
+.postContainer {
+  max-width: 720px;
+  margin: 3rem auto;
+  font-family: 'Inter', sans-serif;
+  a {
+    strong {
+      font-size: 1.75rem;
+      font-family: Inter;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 2.125rem;
+    }
+
+    & > p {
+      margin: 0.5rem 0 0.5rem 0;
+      font-size: 1.125rem;
+      color: var(--gray-200);
+      font-weight: 400;
+    }
+
+    time {
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      color: var(--gray-300);
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+
+      & > p {
+        margin: 1rem;
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+}
+
+.icons {
+  margin-right: 0.5rem;
+}
+
+.loadMore {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  margin: 4rem auto 5rem auto;
+  color: var(--pink-500);
+  cursor: pointer;
+}

@@ -1,1 +1,14 @@
-// TODO
+.headerContainer {
+  max-width: 720px;
+
+  margin: 0 auto;
+  padding: 0 2rem;
+
+  align-items: center;
+  justify-content: space-between;
+
+  a:first-child {
+    display: block;
+    margin: 5rem 0;
+  }
+}
