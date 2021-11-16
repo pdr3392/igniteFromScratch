@@ -1,1 +1,52 @@
-// TODO
+.bannerImage {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  margin-bottom: 4rem;
+}
+
+.contentWrapper {
+  font-family: 'Inter', sans-serif;
+  margin: 1rem auto;
+  max-width: 720px;
+  height: 1000px;
+  text-align: left;
+}
+
+.subContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 1rem auto 10rem auto;
+
+  & > * {
+    margin-right: 0.5rem;
+  }
+
+  & > p {
+    font-size: 0.875rem;
+    margin-right: 2rem;
+    font-weight: 400;
+    color: var(--gray-300);
+  }
+}
+
+/* .postTitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.subHeader {
+  margin: 1rem auto 10rem auto;
+  max-width: 720px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  color: var(--gray-300);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  align-self: center;
+} */

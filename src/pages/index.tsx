@@ -63,7 +63,7 @@ export default function Home({ response }: PostPagination) {
         <main className={styles.contentContainer}>
           {postPagination.map(post => (
             <div key={post.uid} className={styles.postContainer}>
-              <Link href="/">
+              <Link href={`http://localhost:3000/post/${post.uid}`}>
                 <a>
                   <strong>{post.data.title}</strong>
                   <p>{post.data.subtitle}</p>
