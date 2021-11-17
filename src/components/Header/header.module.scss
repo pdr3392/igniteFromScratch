@@ -1,13 +1,9 @@
 .headerContainer {
-  max-width: 720px;
-
-  margin: 0 auto;
-
   align-items: center;
   justify-content: space-between;
 
   a:first-child {
     display: block;
-    margin: 2.5rem 0 2.5rem 0;
+    margin: 2.5rem auto;
   }
 }

@@ -32,12 +32,12 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-export default function Home({ response }: PostPagination) {
-  const [postPagination, setPostPagination] = useState<Post[]>(
-    response.results
-  );
+export default function Home({ postsPagination }: HomeProps) {
+  const { results } = postsPagination;
 
-  const [nextPage, setNextPage] = useState<string>(response.next_page);
+  const [postResults, setPostResults] = useState<Post[]>(results);
+
+  const [nextPage, setNextPage] = useState<string>(postsPagination.next_page);
 
   async function loadMorePosts() {
     const finalData: PostPagination = await fetch(nextPage)
@@ -49,7 +49,7 @@ export default function Home({ response }: PostPagination) {
         console.error(error);
       });
 
-    finalData.results.map(post => setPostPagination([...postPagination, post]));
+    finalData.results.map(post => setPostResults([...postResults, post]));
     setNextPage(finalData.next_page);
   }
 
@@ -60,8 +60,10 @@ export default function Home({ response }: PostPagination) {
       </head>
       <body>
         <Header />
-        <main className={styles.contentContainer}>
-          {postPagination.map(post => (
+        <main
+          className={`${commonStyles.container} ${styles.contentContainer}`}
+        >
+          {postResults.map(post => (
             <div key={post.uid} className={styles.postContainer}>
               <Link href={`http://localhost:3000/post/${post.uid}`}>
                 <a>
@@ -69,11 +71,7 @@ export default function Home({ response }: PostPagination) {
                   <p>{post.data.subtitle}</p>
                   <time>
                     <FiCalendar size="20" className={styles.icons} />
-                    {format(
-                      new Date(post.first_publication_date),
-                      'dd MMM yyyy',
-                      { locale: ptBR }
-                    )}
+                    {post.first_publication_date}
                     <p>
                       <FiUser size="20" className={styles.icons} />
                       {post.data.author}
@@ -100,23 +98,33 @@ export default function Home({ response }: PostPagination) {
 
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient();
-  const response = await prismic.query(
-    [Prismic.predicates.at('document.type', 'posts')],
-    {
-      fetch: [
-        'posts.title',
-        'posts.subtitle',
-        'posts.author',
-        'posts.content',
-        'posts.first_publication_date',
-      ],
-      pageSize: 1,
-    }
-  );
+  const response: PostPagination = await prismic.query([
+    Prismic.predicates.at('document.type', 'posts'),
+  ]);
+
+  const finalPosts = response.results.map(post => ({
+    uid: post.uid,
+    first_publication_date: format(
+      new Date(post.first_publication_date),
+      'dd MMM yyyy',
+      { locale: ptBR }
+    ),
+    data: {
+      title: post.data.title,
+      subtitle: post.data.subtitle,
+      author: post.data.author,
+    },
+  }));
+
+  const postsPagination: PostPagination = {
+    next_page: response.next_page,
+    results: finalPosts,
+  };
 
   return {
     props: {
-      response,
+      postsPagination,
     },
+    revalidate: 60 * 60, // 1hr
   };
 };

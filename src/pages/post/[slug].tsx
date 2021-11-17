@@ -1,4 +1,5 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
+import Head from 'next/head';
 import { FiCalendar, FiUser, FiClock } from 'react-icons/fi';
 import { RichText } from 'prismic-dom';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -35,40 +36,48 @@ export default function Post(props: PostProps) {
 
   return (
     <>
-      <Header />
-      <div>
-        <img className={styles.bannerImage} src={post.data.banner.url} alt="" />
-      </div>
+      <Head />
 
-      <div className={styles.contentWrapper}>
-        <h1>{post.data.title}</h1>
-        <div className={styles.subContainer}>
-          <FiCalendar size="20" />
-          <p>
-            {format(new Date(post.first_publication_date), 'dd MMM yyyy', {
-              locale: ptBR,
-            })}
-          </p>
-          <FiUser size="20" />
-          <p>{post.data.author}</p>
-          <FiClock size="20" />
-          <p>Placeholder tempo</p>
+      <Header />
+      <main>
+        <div>
+          <img
+            className={styles.bannerImage}
+            src={post.data.banner.url}
+            alt=""
+          />
         </div>
-        {post.data.content.map(currentContent => {
-          return (
-            <div className={styles.postWrapper}>
-              <h1>{currentContent.heading}</h1>
-              <div
-                className={styles.bodyContainer}
-                // eslint-disable-next-line react/no-danger
-                dangerouslySetInnerHTML={{
-                  __html: RichText.asHtml(currentContent.body),
-                }}
-              />
-            </div>
-          );
-        })}
-      </div>
+
+        <div className={`${commonStyles.container} ${styles.contentWrapper}`}>
+          <h1>{post.data.title}</h1>
+          <div className={styles.subContainer}>
+            <FiCalendar size="20" />
+            <p>
+              {format(new Date(post.first_publication_date), 'dd MMM yyyy', {
+                locale: ptBR,
+              })}
+            </p>
+            <FiUser size="20" />
+            <p>{post.data.author}</p>
+            <FiClock size="20" />
+            <p>Placeholder tempo</p>
+          </div>
+          {post.data.content.map(currentContent => {
+            return (
+              <div className={styles.postWrapper}>
+                <h1>{currentContent.heading}</h1>
+                <div
+                  className={styles.bodyContainer}
+                  // eslint-disable-next-line react/no-danger
+                  dangerouslySetInnerHTML={{
+                    __html: RichText.asHtml(currentContent.body),
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </main>
     </>
   );
 }
@@ -80,7 +89,7 @@ export default function Post(props: PostProps) {
 
 }; */
 
-export const getStaticPaths = () => {
+export const getStaticPaths: GetStaticPaths = () => {
   return {
     paths: [],
     fallback: 'blocking',
