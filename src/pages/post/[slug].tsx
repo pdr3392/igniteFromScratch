@@ -1,5 +1,6 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { FiCalendar, FiUser, FiClock } from 'react-icons/fi';
+import { RichText } from 'prismic-dom';
 import ptBR from 'date-fns/locale/pt-BR';
 import { format } from 'date-fns';
 import Header from '../../components/Header';
@@ -53,19 +54,21 @@ export default function Post(props: PostProps) {
           <FiClock size="20" />
           <p>Placeholder tempo</p>
         </div>
+        {post.data.content.map(currentContent => {
+          return (
+            <div className={styles.postWrapper}>
+              <h1>{currentContent.heading}</h1>
+              <div
+                className={styles.bodyContainer}
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{
+                  __html: RichText.asHtml(currentContent.body),
+                }}
+              />
+            </div>
+          );
+        })}
       </div>
-
-      {/* <div className={styles.postTitle}>
-        <h1>{post.data.title}</h1>
-      </div>
-      <div className={styles.subHeader}>
-        <FiCalendar />
-        <p>Test</p>
-        <FiUser />
-        <p>Test</p>
-        <FiClock />
-        <p>Test</p>
-      </div> */}
     </>
   );
 }

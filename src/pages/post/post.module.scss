@@ -9,7 +9,6 @@
   font-family: 'Inter', sans-serif;
   margin: 1rem auto;
   max-width: 720px;
-  height: 1000px;
   text-align: left;
 }
 
@@ -17,7 +16,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin: 1rem auto 10rem auto;
+  margin: 1rem auto 4rem auto;
 
   & > * {
     margin-right: 0.5rem;
@@ -31,22 +30,22 @@
   }
 }
 
-/* .postTitle {
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  text-align: center;
+.postWrapper {
+  & > h1 {
+    margin: 2.5rem auto;
+  }
 }
 
-.subHeader {
-  margin: 1rem auto 10rem auto;
-  max-width: 720px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
-  color: var(--gray-300);
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  align-self: center;
-} */
+.bodyContainer {
+  color: var(--gray-200);
+
+  & > * {
+    text-align: justify;
+    text-justify: inter-cluster;
+    line-height: 1.5rem;
+
+    & > a {
+      color: var(--pink-500);
+    }
+  }
+}
