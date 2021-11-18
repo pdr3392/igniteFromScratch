@@ -1,4 +1,6 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
+import Prismic from '@prismicio/client';
 import Head from 'next/head';
 import { FiCalendar, FiUser, FiClock } from 'react-icons/fi';
 import { RichText } from 'prismic-dom';
@@ -27,16 +29,41 @@ interface Post {
   };
 }
 
+interface PostPathProps {
+  uid: string;
+}
+
+interface ReturnPathProps {
+  results: PostPathProps[];
+}
+
 interface PostProps {
   post: Post;
 }
 
 export default function Post(props: PostProps) {
   const { post } = props;
+  const router = useRouter();
+
+  if (router.isFallback) {
+    return <div>Carregando...</div>;
+  }
+
+  function timeCounter(post: Post) {
+    let wordCounter = 0;
+    post.data.content.map(
+      content =>
+        (wordCounter += Number(RichText.asText(content.body).split(' ').length))
+    );
+
+    return Math.ceil(wordCounter / 200);
+  }
 
   return (
     <>
-      <Head />
+      <Head>
+        <title>{post.data.title} | spacetraveling.</title>
+      </Head>
 
       <Header />
       <main>
@@ -60,7 +87,7 @@ export default function Post(props: PostProps) {
             <FiUser size="20" />
             <p>{post.data.author}</p>
             <FiClock size="20" />
-            <p>Placeholder tempo</p>
+            <p>{timeCounter(post)} min</p>
           </div>
           {post.data.content.map(currentContent => {
             return (
@@ -89,34 +116,31 @@ export default function Post(props: PostProps) {
 
 }; */
 
-export const getStaticPaths: GetStaticPaths = () => {
+export const getStaticPaths: GetStaticPaths = async () => {
+  const prismic = getPrismicClient();
+
+  const posts: ReturnPathProps = await prismic.query([
+    Prismic.predicates.at('document.type', 'posts'),
+  ]);
+
+  const paths = posts.results.map(post => ({ params: { slug: post.uid } }));
+
   return {
-    paths: [],
-    fallback: 'blocking',
+    paths,
+    fallback: true,
   };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { slug } = params;
+export const getStaticProps: GetStaticProps = async context => {
+  const { slug } = context.params;
 
   const prismic = getPrismicClient();
   const response: Post = await prismic.getByUID('posts', String(slug), {});
 
-  const finalObjectParsed = {
-    first_publication_date: response.first_publication_date,
-    data: {
-      title: response.data.title,
-      banner: {
-        url: response.data.banner.url,
-      },
-      author: response.data.author,
-      content: response.data.content,
-    },
-  };
-
   return {
     props: {
-      post: finalObjectParsed,
+      post: response,
     },
+    revalidate: 60 * 60 * 4, // 4 hours
   };
 };
