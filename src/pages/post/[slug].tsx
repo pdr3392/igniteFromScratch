@@ -91,7 +91,7 @@ export default function Post(props: PostProps) {
           </div>
           {post.data.content.map(currentContent => {
             return (
-              <div className={styles.postWrapper}>
+              <div key={currentContent.heading} className={styles.postWrapper}>
                 <h1>{currentContent.heading}</h1>
                 <div
                   className={styles.bodyContainer}
@@ -103,6 +103,18 @@ export default function Post(props: PostProps) {
               </div>
             );
           })}
+
+          <div className={`${commonStyles.container} ${styles.divisionLine}`} />
+          <div className={styles.pagination}>
+            <div className={styles.paginationItem}>
+              <h4>Como Utilizar Hooks</h4>
+              <p>Post anterior</p>
+            </div>
+            <div className={styles.paginationItem}>
+              <h4>Como Utilizar Hooks</h4>
+              <p>Post anterior</p>
+            </div>
+          </div>
         </div>
       </main>
     </>

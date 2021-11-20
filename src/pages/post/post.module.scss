@@ -48,3 +48,15 @@
     }
   }
 }
+
+.divisionLine {
+  border: 1px solid var(--gray-200);
+  opacity: 0.1;
+  margin-top: 3rem;
+}
+
+.pagination {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+}
