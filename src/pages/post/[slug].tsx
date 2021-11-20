@@ -1,4 +1,5 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Prismic from '@prismicio/client';
 import Head from 'next/head';
@@ -107,14 +108,35 @@ export default function Post(props: PostProps) {
           <div className={`${commonStyles.container} ${styles.divisionLine}`} />
           <div className={styles.pagination}>
             <div className={styles.paginationItem}>
-              <h4>Como Utilizar Hooks</h4>
-              <p>Post anterior</p>
+              <p>Como Utilizar Hooks</p>
+              <Link href="/">
+                <a>Post anterior</a>
+              </Link>
             </div>
             <div className={styles.paginationItem}>
-              <h4>Como Utilizar Hooks</h4>
-              <p>Post anterior</p>
+              <p>Criando um app CRA do zero</p>
+              <Link href="/">
+                <a>Próximo post</a>
+              </Link>
             </div>
           </div>
+
+          <section
+            ref={elem => {
+              if (!elem) {
+                return;
+              }
+              const scriptElem = document.createElement('script');
+              scriptElem.src = 'https://utteranc.es/client.js';
+              scriptElem.async = true;
+              scriptElem.crossOrigin = 'anonymous';
+              scriptElem.setAttribute('repo', 'pdr3392/igniteFromScratch');
+              scriptElem.setAttribute('issue-term', 'pathname');
+              scriptElem.setAttribute('label', 'blog-comment');
+              scriptElem.setAttribute('theme', 'photon-dark');
+              elem.appendChild(scriptElem);
+            }}
+          />
         </div>
       </main>
     </>

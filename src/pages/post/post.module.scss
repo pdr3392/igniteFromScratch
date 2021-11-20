@@ -59,4 +59,20 @@
   margin-top: 2rem;
   display: flex;
   justify-content: space-between;
+  margin-bottom: 3rem;
+
+  p {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  a {
+    color: var(--pink-500);
+  }
+
+  & .paginationItem:last-child {
+    text-align: right;
+  }
 }
