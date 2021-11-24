@@ -40,10 +40,12 @@ interface ReturnPathProps {
 
 interface PostProps {
   post: Post;
+  preview: boolean;
 }
 
 export default function Post(props: PostProps) {
   const { post } = props;
+  const { preview } = props;
   const router = useRouter();
 
   if (router.isFallback) {
@@ -137,18 +139,19 @@ export default function Post(props: PostProps) {
               elem.appendChild(scriptElem);
             }}
           />
+
+          {preview && (
+            <aside className={styles.exitPreview}>
+              <Link href="/api/exit-preview">
+                <a>Sair do modo Preview</a>
+              </Link>
+            </aside>
+          )}
         </div>
       </main>
     </>
   );
 }
-
-/* export const getStaticPaths: GetStaticPaths = async () => {
-  const prismic = getPrismicClient();
-  const posts = await prismic.query();
-
-
-}; */
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const prismic = getPrismicClient();
@@ -165,15 +168,22 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps = async context => {
-  const { slug } = context.params;
+export const getStaticProps: GetStaticProps = async ({
+  params,
+  preview = false,
+  previewData,
+}) => {
+  const { slug } = params;
 
   const prismic = getPrismicClient();
-  const response: Post = await prismic.getByUID('posts', String(slug), {});
+  const response: Post = await prismic.getByUID('posts', String(slug), {
+    ref: previewData?.ref ?? null,
+  });
 
   return {
     props: {
       post: response,
+      preview,
     },
     revalidate: 60 * 60 * 4, // 4 hours
   };

@@ -76,3 +76,28 @@
     text-align: right;
   }
 }
+
+.exitPreview {
+  width: 43rem;
+  height: 3.5rem;
+  background-color: var(--white);
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 3.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 5rem auto;
+
+  transition: filter 0.2s;
+
+  &:hover {
+    filter: brightness(0.9);
+  }
+
+  a {
+    font-weight: 600;
+    color: var(--black-500);
+  }
+}
