@@ -16,6 +16,14 @@ import styles from './post.module.scss';
 interface Post {
   first_publication_date: string | null;
   data: {
+    prevPost?: {
+      uid: string;
+      title: string;
+    };
+    nextPost?: {
+      uid: string;
+      title: string;
+    };
     title: string;
     banner: {
       url: string;
@@ -110,8 +118,8 @@ export default function Post(props: PostProps) {
           <div className={`${commonStyles.container} ${styles.divisionLine}`} />
           <div className={styles.pagination}>
             <div className={styles.paginationItem}>
-              <p>Como Utilizar Hooks</p>
-              <Link href="/">
+              <p>{post.data.prevPost.title}</p>
+              <Link href={`/post/${post.data.prevPost.uid}`}>
                 <a>Post anterior</a>
               </Link>
             </div>
@@ -180,9 +188,64 @@ export const getStaticProps: GetStaticProps = async ({
     ref: previewData?.ref ?? null,
   });
 
+  const prevPost = await prismic.query(
+    [
+      Prismic.Predicates.at('document.type', 'posts'),
+      Prismic.Predicates.dateBefore(
+        'document.first_publication_date',
+        response.first_publication_date
+      ),
+    ],
+    {
+      pageSize: 60,
+      fetch: ['post.results.uid', 'post.results.title'],
+      ref: previewData?.ref ?? null,
+    }
+  );
+
+  const nextPost = await prismic.query(
+    [
+      Prismic.Predicates.at('document.type', 'posts'),
+      Prismic.Predicates.dateAfter(
+        'document.first_publication_date',
+        response.first_publication_date
+      ),
+    ],
+    {
+      pageSize: 60,
+      fetch: ['post.results.uid', 'post.results.title'],
+      ref: previewData?.ref ?? null,
+    }
+  );
+
+  const nextPostIndex = nextPost.results.length - 1;
+  const prevPostIndex = prevPost.results.length - 1;
+  const nextChecker = Boolean(nextPost.results[nextPostIndex]);
+  const prevChecker = Boolean(prevPost.results[prevPostIndex]);
+
+  const propsToReturn = {
+    first_publication_date: response.first_publication_date,
+    data: {
+      prevPost: {
+        uid: prevChecker ? prevPost.results[prevPostIndex].uid : null,
+        title: prevChecker ? prevPost.results[prevPostIndex].data.title : null,
+      },
+      nextPost: {
+        uid: nextChecker ? nextPost.results[nextPostIndex].uid : null,
+        title: nextChecker ? nextPost.results[nextPostIndex].data.title : null,
+      },
+      title: response.data.title,
+      banner: {
+        url: response.data.banner.url,
+      },
+      author: response.data.author,
+      content: response.data.content,
+    },
+  };
+
   return {
     props: {
-      post: response,
+      post: propsToReturn,
       preview,
     },
     revalidate: 60 * 60 * 4, // 4 hours
