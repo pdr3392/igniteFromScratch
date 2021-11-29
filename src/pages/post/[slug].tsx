@@ -16,6 +16,7 @@ import styles from './post.module.scss';
 
 interface Post {
   first_publication_date: string | null;
+  last_publication_date: string | null;
   data: {
     prevPost?: {
       uid: string;
@@ -64,6 +65,17 @@ export default function Post(props: PostProps) {
     return <div>Carregando...</div>;
   }
 
+  function lastEditFormatter(date) {
+    const dateToBeParsed = format(new Date(date), 'dd MMM yyyy', {
+      locale: ptBR,
+    });
+    const hourToBeParsed = new Date(date)
+      .toLocaleTimeString('pt-BR')
+      .slice(0, 5);
+
+    return `${dateToBeParsed}, às ${hourToBeParsed}`;
+  }
+
   function timeCounter(post: Post) {
     let wordCounter = 0;
     post.data.content.map(
@@ -103,6 +115,9 @@ export default function Post(props: PostProps) {
             <p>{post.data.author}</p>
             <FiClock size="20" />
             <p>{timeCounter(post)} min</p>
+          </div>
+          <div className={styles.lastEdit}>
+            <p>* editado em {lastEditFormatter(post.last_publication_date)}</p>
           </div>
           {post.data.content.map(currentContent => {
             return (
@@ -250,6 +265,7 @@ export const getStaticProps: GetStaticProps = async ({
 
   const propsToReturn = {
     first_publication_date: response.first_publication_date,
+    last_publication_date: response.last_publication_date,
     data: {
       prevPost: {
         uid: prevChecker ? prevPostParsed.uid : null,

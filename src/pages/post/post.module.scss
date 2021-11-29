@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin: 1rem auto 4rem auto;
+  margin: 1rem auto;
 
   & > * {
     margin-right: 0.5rem;
@@ -99,5 +99,19 @@
   a {
     font-weight: 600;
     color: var(--black-500);
+  }
+}
+
+.lastEdit {
+  margin-bottom: 4rem;
+
+  & > p {
+    font-size: 0.875rem;
+    margin-right: 2rem;
+    font-weight: 400;
+    color: var(--gray-300);
+    font-style: italic;
+    line-height: 1rem;
+    font-family: 'Inter', sans-serif;
   }
 }
