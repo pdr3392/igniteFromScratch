@@ -9,6 +9,7 @@ import ptBR from 'date-fns/locale/pt-BR';
 import { format } from 'date-fns';
 import Header from '../../components/Header';
 import { getPrismicClient } from '../../services/prismic';
+import Comments from '../../components/Comments';
 
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
@@ -55,6 +56,9 @@ export default function Post(props: PostProps) {
   const { post } = props;
   const { preview } = props;
   const router = useRouter();
+
+  const nextChecker = post.data.nextPost.title !== null;
+  const prevChecker = post.data.prevPost.title !== null;
 
   if (router.isFallback) {
     return <div>Carregando...</div>;
@@ -116,37 +120,31 @@ export default function Post(props: PostProps) {
           })}
 
           <div className={`${commonStyles.container} ${styles.divisionLine}`} />
+
           <div className={styles.pagination}>
-            <div className={styles.paginationItem}>
-              <p>{post.data.prevPost.title}</p>
-              <Link href={`/post/${post.data.prevPost.uid}`}>
-                <a>Post anterior</a>
-              </Link>
-            </div>
-            <div className={styles.paginationItem}>
-              <p>Criando um app CRA do zero</p>
-              <Link href="/">
-                <a>Próximo post</a>
-              </Link>
-            </div>
+            {prevChecker ? (
+              <div className={styles.paginationItem}>
+                <p>{post.data.prevPost.title}</p>
+                <Link href={`/post/${post.data.prevPost.uid}`}>
+                  <a>Post anterior</a>
+                </Link>
+              </div>
+            ) : (
+              <div className={styles.paginationItem} />
+            )}
+            {nextChecker ? (
+              <div className={styles.paginationItem}>
+                <p>{post.data.nextPost.title}</p>
+                <Link href={`/post/${post.data.nextPost.uid}`}>
+                  <a>Próximo post</a>
+                </Link>
+              </div>
+            ) : (
+              <div className={styles.paginationItem} />
+            )}
           </div>
 
-          <section
-            ref={elem => {
-              if (!elem) {
-                return;
-              }
-              const scriptElem = document.createElement('script');
-              scriptElem.src = 'https://utteranc.es/client.js';
-              scriptElem.async = true;
-              scriptElem.crossOrigin = 'anonymous';
-              scriptElem.setAttribute('repo', 'pdr3392/igniteFromScratch');
-              scriptElem.setAttribute('issue-term', 'pathname');
-              scriptElem.setAttribute('label', 'blog-comment');
-              scriptElem.setAttribute('theme', 'photon-dark');
-              elem.appendChild(scriptElem);
-            }}
-          />
+          <Comments />
 
           {preview && (
             <aside className={styles.exitPreview}>
@@ -193,7 +191,7 @@ export const getStaticProps: GetStaticProps = async ({
       Prismic.Predicates.at('document.type', 'posts'),
       Prismic.Predicates.dateBefore(
         'document.first_publication_date',
-        response.first_publication_date
+        new Date(response.first_publication_date)
       ),
     ],
     {
@@ -208,7 +206,7 @@ export const getStaticProps: GetStaticProps = async ({
       Prismic.Predicates.at('document.type', 'posts'),
       Prismic.Predicates.dateAfter(
         'document.first_publication_date',
-        response.first_publication_date
+        new Date(response.first_publication_date)
       ),
     ],
     {
@@ -218,21 +216,48 @@ export const getStaticProps: GetStaticProps = async ({
     }
   );
 
-  const nextPostIndex = nextPost.results.length - 1;
-  const prevPostIndex = prevPost.results.length - 1;
-  const nextChecker = Boolean(nextPost.results[nextPostIndex]);
-  const prevChecker = Boolean(prevPost.results[prevPostIndex]);
+  const nextOverallDates = nextPost.results.map(
+    post => post.first_publication_date
+  );
+  const prevOverallDates = prevPost.results.map(
+    post => post.first_publication_date
+  );
+
+  const getLatest = arr => arr.sort((a, b) => new Date(b) - new Date(a))[0];
+  const getNewer = arr =>
+    arr.sort((a, b) => new Date(b) - new Date(a))[arr.length - 1];
+
+  const nextPostParsed = nextPost.results
+    .map(post => {
+      if (post.first_publication_date === getNewer(nextOverallDates))
+        return post;
+    })
+    .filter(function (x) {
+      return x !== undefined;
+    })[0];
+
+  const prevPostParsed = prevPost.results
+    .map(post => {
+      if (post.first_publication_date === getLatest(prevOverallDates))
+        return post;
+    })
+    .filter(function (x) {
+      return x !== undefined;
+    })[0];
+
+  const nextChecker = Boolean(nextPostParsed);
+  const prevChecker = Boolean(prevPostParsed);
 
   const propsToReturn = {
     first_publication_date: response.first_publication_date,
     data: {
       prevPost: {
-        uid: prevChecker ? prevPost.results[prevPostIndex].uid : null,
-        title: prevChecker ? prevPost.results[prevPostIndex].data.title : null,
+        uid: prevChecker ? prevPostParsed.uid : null,
+        title: prevChecker ? prevPostParsed.data.title : null,
       },
       nextPost: {
-        uid: nextChecker ? nextPost.results[nextPostIndex].uid : null,
-        title: nextChecker ? nextPost.results[nextPostIndex].data.title : null,
+        uid: nextChecker ? nextPostParsed.uid : null,
+        title: nextChecker ? nextPostParsed.data.title : null,
       },
       title: response.data.title,
       banner: {
@@ -248,6 +273,6 @@ export const getStaticProps: GetStaticProps = async ({
       post: propsToReturn,
       preview,
     },
-    revalidate: 60 * 60 * 4, // 4 hours
+    revalidate: 60 * 60, // 1 hour
   };
 };
