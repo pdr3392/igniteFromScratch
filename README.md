@@ -1,6 +1,6 @@
 # igniteFromScratch
 
-A NextJS project develop for Rocketeseat's Ignite training. Used PrismicIO as CMS, Server Side Rendering from NextJS, React's JSX standard, components structure and CSS modules.
+A NextJS project develop for Rocketeseat's Ignite training. Used PrismicIO as CMS, Server Side Rendering from NextJS, React's JSX standard, components structure and SASS.
 
 To run it clone the project with "git clone git@github.com:pdr3392/igniteFromScratch.git", install the dependencies with* "yarn install" and run the project with* "yarn dev".
 
